@@ -11,6 +11,17 @@ def basic_clean(text):
     text = re.sub(r'[^a-z\s]', '', text)
     return text
 
+
+aux_verbs = set(['be', 'am', 'is', 'are', 'was', 'were', 'being', 'been',
+                 'have', 'has', 'had', 'having',
+                 'do', 'does', 'did', 'doing',
+                 'will', 'would', 'shall', 'should', 'may', 'might', 'must', 'can', 'could'])
+def remove_aux_verbs(text):
+    tokens = text.split()
+    filtered_tokens = [word for word in tokens if word not in aux_verbs]
+    return ' '.join(filtered_tokens)
+
+
 def remove_stopwords(text):
     return ' '.join([word for word in text.split() if word not in stop_words])
 
