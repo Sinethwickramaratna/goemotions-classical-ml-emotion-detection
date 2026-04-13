@@ -1,6 +1,7 @@
 import re
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer, WordNetLemmatizer
+import contractions
 
 stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()
@@ -9,6 +10,7 @@ stemmer = PorterStemmer()
 def basic_clean(text):
     text = text.lower()
     text = re.sub(r'[^a-z\s]', '', text)
+    #text = contractions.fix(text)
     return text
 
 
@@ -22,8 +24,8 @@ def remove_aux_verbs(text):
     return ' '.join(filtered_tokens)
 
 
-def remove_stopwords(text):
-    return ' '.join([word for word in text.split() if word not in stop_words])
+def stem_text(text):
+  return " ".join([stemmer.stem(word) for word in text.split()])
 
 def lemmatize_text(text):
     return ' '.join([lemmatizer.lemmatize(word) for word in text.split()])
