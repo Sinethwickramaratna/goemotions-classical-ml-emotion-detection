@@ -43,7 +43,8 @@ models = {
   'Random Forest': get_random_forest(),
   'XGBoost': get_xgboost_model(),
   'SGD': get_sgd_model(),
-  'KNN': get_knn_model()
+  'KNN': get_knn_model(),
+  'SVM': get_svm_model()
 }
 
 # We will use the iterative_train_test_split function from skmultilearn to split the data into training and testing sets
