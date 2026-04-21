@@ -166,8 +166,6 @@ Reusable evaluation logic is under `src/evaluation/`:
 4. Use notebooks in `notebook/` for EDA and baseline exploration.
 
 ## Future Improvements (Optional)
-
-- Add a `requirements.txt` for reproducible installs.
 - Add a single CLI entrypoint with flags (vectorizer/model/sampling).
 - Add model persistence and experiment tracking.
 - Add automated tests for preprocessing and label mapping.
