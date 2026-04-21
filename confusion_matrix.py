@@ -1,16 +1,23 @@
 import pandas as pd
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from imblearn.over_sampling import SMOTE
 
 from src.preprocessing.clean_text import basic_clean, remove_aux_verbs, stem_text
-from src.preprocessing.target_preprocessing_neutral_mixed import target_processing
+from src.preprocessing.target_preprocessing import target_processing
 from src.vectorization.bow import get_bow
 from src.vectorization.tfidf import get_tfidf
+from src.evaluation.metrics import evaluate_model
+from src.preprocessing.feature_selection import feature_selection
 
 from src.models.knn import get_knn_model
 from src.models.logistic_regression import get_logistic_regression_model
 from src.models.random_forest import get_random_forest
+from src.models.svm import get_svm_model
 from src.models.xgboost import get_xgboost_model
 from src.models.sgd import get_sgd_model
-from src.evaluation.compare_with_smote import compare_models
+from src.evaluation.compare import compare_models
 
 # First lets load the data
 df_1 = pd.read_csv("data/raw/goemotions_1.csv")
@@ -30,25 +37,32 @@ df[text_col] = df[text_col].apply(stem_text)
 # Next, let's preprocess the target labels by applying the target_processing function to the dataframe
 df = target_processing(df)
 
-# Next, let's add the vectorizations I am interested in comparing to the dataframe.
-vectorization_methods = {
-  'tfidf': get_tfidf(),
-  'bow': get_bow()
-}  
+# Next, let's add the vectorization
+vect = get_tfidf()
 
-# Now let's compare the models using the compare_models function
-models = {
-  'Logistic Regression': get_logistic_regression_model(),
-  'Random Forest': get_random_forest(),
-  'XGBoost': get_xgboost_model(),
-  'SGD': get_sgd_model(),
-  'KNN': get_knn_model(),
-}
 
-# We will use the iterative_train_test_split function from skmultilearn to split the data into training and testing sets
+model = get_random_forest()
+
 X = df[text_col].values 
 y = df[target_col].values
 
-results_df = compare_models(vectorization_methods, models, X, y)
-print(results_df)
-results_df.to_csv('./comparison_results_4.csv', index=False)
+X_vec = vect.fit_transform(X)
+
+X_vec = feature_selection(X_vec)
+
+X_train, X_test, y_train, y_test = train_test_split(X_vec, y, test_size=0.1, random_state=42, stratify=y)
+
+# Apply SMOTE to the training data
+smote = SMOTE(random_state=42)
+X_train_resampled, y_train_resampled = smote.fit_resample(X_train, y_train)
+
+model.fit(X_train_resampled, y_train_resampled)
+y_pred = model.predict(X_test)
+
+
+print(evaluate_model(y_test, y_pred))
+
+disp = ConfusionMatrixDisplay(confusion_matrix(y_test, y_pred), display_labels=['ambiguous', 'positive', 'negative'])
+disp.plot()
+plt.show()
+

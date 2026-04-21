@@ -8,9 +8,10 @@ from src.vectorization.tfidf import get_tfidf
 from src.models.knn import get_knn_model
 from src.models.logistic_regression import get_logistic_regression_model
 from src.models.random_forest import get_random_forest
+from src.models.svm import get_svm_model
 from src.models.xgboost import get_xgboost_model
 from src.models.sgd import get_sgd_model
-from src.evaluation.compare_with_smote import compare_models
+from src.evaluation.compare import compare_models
 
 # First lets load the data
 df_1 = pd.read_csv("data/raw/goemotions_1.csv")
@@ -51,4 +52,4 @@ y = df[target_col].values
 
 results_df = compare_models(vectorization_methods, models, X, y)
 print(results_df)
-results_df.to_csv('./comparison_results_4.csv', index=False)
+results_df.to_csv('./comparison_results_neutral_mixed.csv', index=False)
